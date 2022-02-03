@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">orange-button-apk</string>
+    <string name="server_client_id">27951169145-nsfdhrcgldkin04f659no9fg5u1tqhb0.apps.googleusercontent.com</string>
+    <string name="base_url">http://10.0.2.2:8080</string>
+</resources>
