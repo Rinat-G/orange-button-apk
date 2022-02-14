@@ -1,4 +1,4 @@
-package com.example.orange_button_apk;
+package com.example.orange_button_apk.activities;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -20,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.example.orange_button_apk.R;
 import com.pedro.encoder.input.video.CameraHelper;
 import com.pedro.rtplibrary.rtsp.RtspCamera1;
 import com.pedro.rtsp.rtsp.VideoCodec;
@@ -141,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "slap!", Toast.LENGTH_SHORT).show();
 
             if (!rtspCamera1.isStreaming() && prepareEncoders()) {
-                rtspCamera1.startStream("rtsp://192.168.0.92:8554/stream2");
+                rtspCamera1.startStream(getString(R.string.rtsp_url) + "/stream213");
                 makeButtonActive(v);
             } else {
                 rtspCamera1.stopStream();
