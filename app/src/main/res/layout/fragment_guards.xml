@@ -4,34 +4,32 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="5dp"
+    android:gravity="start"
     android:orientation="vertical"
-    tools:context=".fragment.PinFragment">
+    tools:context=".fragment.GuardsFragment">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Введите email-адреса доверенных лиц"
+
+        />
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_gravity="center"
-        android:layout_weight="1"
-        android:orientation="vertical">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Введите пин-код" />
-
-        <EditText
-            android:id="@+id/pin_input"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:autofillHints="emailAddress"
-            android:inputType="numberPassword" />
-    </LinearLayout>
-
-    <LinearLayout
+        android:id="@+id/guards_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="end"
+        android:orientation="vertical" />
+
+    <Button
+        android:id="@+id/button_add_more"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Добавить строку" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:gravity="bottom"
         android:orientation="horizontal">
 
@@ -41,11 +39,11 @@
             android:layout_weight="1">
 
             <Button
-                android:id="@+id/pin_button_back"
+                android:id="@+id/reg_button_cancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
-                android:text="Назад" />
+                android:text="Отмена" />
         </LinearLayout>
 
 
@@ -54,13 +52,14 @@
             android:layout_height="wrap_content">
 
             <Button
-                android:id="@+id/pin_button_forward"
+                android:id="@+id/reg_button_forward"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
-                android:enabled="false"
                 android:text="Далее" />
         </LinearLayout>
 
     </LinearLayout>
+
+
 </LinearLayout>

@@ -24,4 +24,5 @@
     <string name="second_step_text">Second step fragment</string>
     <string name="btn_txt_next_step">Next</string>
     <string name="btn_txt_back_step">Back</string>
+    <string name="registration_welcome_string">При первом входе необходимо ввести список доверенных и пин-код</string>
 </resources>

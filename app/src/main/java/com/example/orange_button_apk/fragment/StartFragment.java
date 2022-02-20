@@ -1,6 +1,8 @@
 package com.example.orange_button_apk.fragment;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -101,6 +103,11 @@ public class StartFragment extends Fragment {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
             Log.i(TAG, "handleSignInResult: " + account.getEmail());
 
+
+            SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString("token", account.getIdToken());
+            editor.apply();
 
             httpClientHandler.makeSessionRequest(
                     account.getIdToken(),

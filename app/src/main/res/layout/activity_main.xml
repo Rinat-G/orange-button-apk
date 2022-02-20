@@ -17,9 +17,9 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
         android:layout_margin="20dp"
-        android:layout_alignParentBottom="true">
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/tvBitrate"
@@ -33,19 +33,17 @@
             android:id="@+id/start_stop_stream"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/ic_baseline_camera_24"
-            android:layout_centerVertical="true"
             android:layout_centerHorizontal="true"
-
-            />
+            android:layout_centerVertical="true"
+            app:srcCompat="@drawable/ic_camera_orange" />
 
         <ImageView
             android:id="@+id/switch_camera"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/ic_baseline_flip_camera_ios_24"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
+            app:srcCompat="@drawable/ic_baseline_flip_camera_ios_24"
 
             />
     </RelativeLayout>

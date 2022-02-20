@@ -1,21 +1,23 @@
 package com.example.orange_button_apk.fragment;
 
+import static com.example.orange_button_apk.fragment.RegistrationFragmentDirections.actionRegistrationFragmentToGuardsFragment;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
+import com.example.orange_button_apk.R;
 import com.example.orange_button_apk.databinding.FragmentRegistrationBinding;
 
 public class RegistrationFragment extends Fragment {
     private FragmentRegistrationBinding binding;
-    private int counter = 1;
 
 
     public RegistrationFragment() {
@@ -44,16 +46,14 @@ public class RegistrationFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        binding.buttonAddMore.setOnClickListener(v -> {
-            EditText newInput = new EditText(getContext());
-            ((LinearLayout) view).addView(newInput, counter);
-            counter++;
-        });
-
-        binding.regButtonForward.setOnClickListener(v -> {
-
-        });
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(R.string.registration_welcome_string)
+                .setPositiveButton(
+                        "Ок",
+                        (dialogInterface, i) -> Navigation.findNavController(view)
+                                .navigate(actionRegistrationFragmentToGuardsFragment()))
+                .create()
+                .show();
 
     }
 }
