@@ -13,9 +13,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.example.orange_button_apk.AuthCallBack;
 import com.example.orange_button_apk.HttpClientHandler;
 import com.example.orange_button_apk.R;
+import com.example.orange_button_apk.SessionRequestCallBack;
 import com.example.orange_button_apk.activities.StartActivity;
 import com.example.orange_button_apk.databinding.FragmentStartBinding;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -111,7 +111,7 @@ public class StartFragment extends Fragment {
 
             httpClientHandler.makeSessionRequest(
                     account.getIdToken(),
-                    new AuthCallBack(getActivity(), getView()),
+                    new SessionRequestCallBack(getActivity(), getView()),
                     getString(R.string.base_url)
             );
 

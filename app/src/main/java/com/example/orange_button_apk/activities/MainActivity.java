@@ -12,13 +12,12 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import com.example.orange_button_apk.R;
 import com.pedro.encoder.input.video.CameraHelper;
@@ -44,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private RtspCamera1 rtspCamera1;
     private ImageView bStartStopStream;
     private TextView tvBitrate;
+    private String mSession;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -61,6 +61,8 @@ public class MainActivity extends AppCompatActivity {
         rtspCamera1 = new RtspCamera1(surfaceView, getConnectCheckerRtsp());
         rtspCamera1.setVideoCodec(VideoCodec.H264);
 //        rtspCamera1.setVideoCodec(VideoCodec.H265);
+
+        mSession = getIntent().getStringExtra("session");
 
         initButtons();
 
@@ -131,18 +133,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initButtons() {
-        ImageView bSwitchCamera = findViewById(R.id.switch_camera);
+        ImageView bSwitchCamera = findViewById(R.id.switch_camera_btn);
         bSwitchCamera.setOnClickListener(v -> {
-            Toast.makeText(this, "bams!", Toast.LENGTH_SHORT).show();
             rtspCamera1.switchCamera();
         });
 
-        bStartStopStream = findViewById(R.id.start_stop_stream);
+        bStartStopStream = findViewById(R.id.start_stop_stream_btn);
         bStartStopStream.setOnClickListener(v -> {
-            Toast.makeText(this, "slap!", Toast.LENGTH_SHORT).show();
-
             if (!rtspCamera1.isStreaming() && prepareEncoders()) {
-                rtspCamera1.startStream(getString(R.string.rtsp_url) + "/stream213");
+                rtspCamera1.startStream(getString(R.string.rtsp_url) + "/" + mSession);
                 makeButtonActive(v);
             } else {
                 rtspCamera1.stopStream();
@@ -154,13 +153,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void makeButtonActive(View v) {
         ImageView iv = (ImageView) v;
-        iv.setColorFilter(ContextCompat.getColor(this, R.color.button_stop_stream_red));
-
+        iv.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.ic_camera_red));
     }
 
     private void makeButtonInactive(View v) {
         ImageView iv = (ImageView) v;
-        iv.setColorFilter(ContextCompat.getColor(this, R.color.button_default_grey));
+        iv.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.ic_camera_orange));
     }
 
     private boolean prepareEncoders() {

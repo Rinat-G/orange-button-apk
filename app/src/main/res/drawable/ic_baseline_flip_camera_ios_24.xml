@@ -1,6 +1,6 @@
 <vector android:alpha="0.8"
     android:height="48dp"
-    android:tint="#808080"
+    android:tint="#BDBDBD"
     android:viewportHeight="24"
     android:viewportWidth="24"
     android:width="48dp"

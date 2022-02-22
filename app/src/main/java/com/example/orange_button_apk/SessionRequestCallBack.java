@@ -1,5 +1,6 @@
 package com.example.orange_button_apk;
 
+import static androidx.navigation.Navigation.findNavController;
 import static com.example.orange_button_apk.utils.Toaster.makeToastLong;
 import static com.example.orange_button_apk.utils.Toaster.makeToastShort;
 
@@ -9,7 +10,6 @@ import android.util.Log;
 import android.view.View;
 
 import androidx.navigation.NavDirections;
-import androidx.navigation.Navigation;
 
 import com.example.orange_button_apk.fragment.StartFragmentDirections;
 
@@ -21,12 +21,12 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class AuthCallBack implements Callback {
-    private static final String TAG = AuthCallBack.class.getSimpleName();
+public class SessionRequestCallBack implements Callback {
+    private static final String TAG = SessionRequestCallBack.class.getSimpleName();
     private final Activity mActivity;
     private final View rootView;
 
-    public AuthCallBack(Activity activity, View rootView) {
+    public SessionRequestCallBack(Activity activity, View rootView) {
         this.mActivity = activity;
         this.rootView = rootView;
     }
@@ -42,10 +42,11 @@ public class AuthCallBack implements Callback {
     public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
         if (response.isSuccessful()) {
             Log.i(TAG, "onResponse: ok");
+            String session = response.body().string();
             makeToastShort(mActivity, "Auth OK");
-            makeToastShort(mActivity, "Session: " + response.body().string());
+            makeToastShort(mActivity, "Session: " + session);
 
-            onSuccess();
+            onSuccess(session);
         } else {
             Log.e(TAG, "onResponse: status: " + response.code() + " body:" + response.body());
             makeToastLong(mActivity, "Auth failed. Code: " + response.code());
@@ -56,8 +57,8 @@ public class AuthCallBack implements Callback {
 
     }
 
-    private void onSuccess() {
-        navigateTo(StartFragmentDirections.actionStartFragmentToMainActivity());
+    private void onSuccess(String session) {
+        navigateTo(StartFragmentDirections.actionStartFragmentToMainActivity(session));
     }
 
     private void on406() {
@@ -71,9 +72,7 @@ public class AuthCallBack implements Callback {
 
     private void navigateTo(NavDirections action) {
         Handler mainHandler = new Handler(mActivity.getMainLooper());
-        mainHandler.post(() -> {
-                    Navigation.findNavController(rootView).navigate(action);
-                }
+        mainHandler.post(() -> findNavController(rootView).navigate(action)
         );
     }
 }

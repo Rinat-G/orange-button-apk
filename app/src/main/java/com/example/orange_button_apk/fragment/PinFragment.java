@@ -1,11 +1,14 @@
 package com.example.orange_button_apk.fragment;
 
 
+import static androidx.navigation.Navigation.findNavController;
+import static com.example.orange_button_apk.fragment.PinFragmentDirections.actionPinFragmentToMainActivity;
 import static com.example.orange_button_apk.utils.Toaster.makeToastShort;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -15,7 +18,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
 
 import com.example.orange_button_apk.HttpClientHandler;
 import com.example.orange_button_apk.R;
@@ -66,38 +68,19 @@ public class PinFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         emails = Arrays.asList(PinFragmentArgs.fromBundle(getArguments()).getEmails());
 
-        binding.pinButtonBack.setOnClickListener(v -> Navigation.findNavController(v).popBackStack());
+        binding.pinButtonBack.setOnClickListener(v -> findNavController(v).popBackStack());
 
         binding.pinButtonForward.setOnClickListener(v -> {
 
             SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
             String token = sharedPref.getString("token", null);
 
-            Callback callback = new Callback() {
-                @Override
-                public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                    makeToastShort(getActivity(), "SignUp Request Failed");
-                }
-
-                @Override
-                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                    if (response.isSuccessful()) {
-                        makeToastShort(getActivity(), "SignUp Succeed");
-
-                    } else {
-                        makeToastShort(getActivity(), "SignUp Failed. Code:" + response.code());
-                    }
-                }
-            };
-
             httpClientHandler.makeSignUpRequest(
                     token,
-                    callback,
+                    getRegistrationCallback(token),
                     getString(R.string.base_url),
                     new SignUpRequest(emails, binding.pinInput.getText().toString())
             );
-
-            Navigation.findNavController(v).navigate(PinFragmentDirections.actionPinFragmentToMainActivity());
 
         });
 
@@ -116,5 +99,58 @@ public class PinFragment extends Fragment {
             public void afterTextChanged(Editable s) {
             }
         });
+    }
+
+    private Callback getRegistrationCallback(String token) {
+        return new Callback() {
+
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                makeToastShort(getActivity(), "SignUp Request Failed");
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    makeToastShort(getActivity(), "SignUp Succeed");
+//                    SharedPreferences sharedPref = getActivity().getSharedPreferences("common", Context.MODE_PRIVATE);
+//                    SharedPreferences.Editor editor = sharedPref.edit();
+//                    editor.putString("session", response.body().string());
+//                    editor.apply();
+
+                    httpClientHandler.makeSessionRequest(token, getSessionCallback(), getString(R.string.base_url));
+                } else {
+                    makeToastShort(getActivity(), "SignUp Failed. Code:" + response.code());
+                }
+            }
+        };
+    }
+
+    private Callback getSessionCallback() {
+        return new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                makeToastShort(getActivity(), "Session request failed.");
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    Handler mainHandler = new Handler(getActivity().getMainLooper());
+                    mainHandler.post(() -> {
+                                try {
+                                    findNavController(getView()).navigate(actionPinFragmentToMainActivity(response.body().string()));
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                    );
+
+
+                } else {
+                    makeToastShort(getActivity(), "Session request Failed. Code:" + response.code());
+                }
+            }
+        };
     }
 }

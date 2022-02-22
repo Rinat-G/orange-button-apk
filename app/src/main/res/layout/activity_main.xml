@@ -15,38 +15,45 @@
         android:layout_gravity="center" />
 
     <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_height="122dp"
         android:layout_alignParentBottom="true"
-        android:layout_margin="20dp"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="60dp"
+        android:layout_marginBottom="20dp"
         android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/tvBitrate"
+        <ImageView
+            android:id="@+id/settings_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="false"
             android:layout_centerVertical="true"
-            android:textColor="@color/button_stop_stream_red" />
+            app:srcCompat="@drawable/ic_baseline_settings_24" />
 
         <ImageView
-            android:id="@+id/start_stop_stream"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
+            android:id="@+id/start_stop_stream_btn"
+            android:layout_width="92dp"
+            android:layout_height="92dp"
+            android:layout_centerInParent="true"
             app:srcCompat="@drawable/ic_camera_orange" />
 
         <ImageView
-            android:id="@+id/switch_camera"
+            android:id="@+id/switch_camera_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            app:srcCompat="@drawable/ic_baseline_flip_camera_ios_24"
-
-            />
+            app:srcCompat="@drawable/ic_baseline_flip_camera_ios_24" />
     </RelativeLayout>
 
+    <TextView
+        android:id="@+id/tvBitrate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:textColor="@color/button_stop_stream_red" />
 
 </RelativeLayout>

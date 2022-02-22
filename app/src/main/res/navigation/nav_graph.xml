@@ -31,7 +31,11 @@
         android:id="@+id/mainActivity"
         android:name="com.example.orange_button_apk.activities.MainActivity"
         android:label="activity_main"
-        tools:layout="@layout/activity_main" />
+        tools:layout="@layout/activity_main">
+        <argument
+            android:name="session"
+            app:argType="string" />
+    </activity>
     <fragment
         android:id="@+id/pinFragment"
         android:name="com.example.orange_button_apk.fragment.PinFragment"
