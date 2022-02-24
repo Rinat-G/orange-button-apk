@@ -3,28 +3,46 @@ package com.example.orange_button_apk.activities;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.app.ActivityCompat;
 
+import com.example.orange_button_apk.HttpClientHandler;
 import com.example.orange_button_apk.R;
+import com.example.orange_button_apk.model.SessionCloseRequest;
+import com.google.android.material.chip.Chip;
 import com.pedro.encoder.input.video.CameraHelper;
 import com.pedro.rtplibrary.rtsp.RtspCamera1;
+import com.pedro.rtplibrary.util.FpsListener;
 import com.pedro.rtsp.rtsp.VideoCodec;
 import com.pedro.rtsp.utils.ConnectCheckerRtsp;
 
+import java.io.IOException;
+
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
+
+@AndroidEntryPoint
 public class MainActivity extends AppCompatActivity {
     public static final int VIDEO_RESOLUTION_WIDTH = 640;
     public static final int VIDEO_RESOLUTION_HEIGHT = 480;
@@ -40,10 +58,14 @@ public class MainActivity extends AppCompatActivity {
             Manifest.permission.INTERNET,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
+    @Inject
+    public HttpClientHandler httpClientHandler;
     private RtspCamera1 rtspCamera1;
     private ImageView bStartStopStream;
-    private TextView tvBitrate;
+    private Chip leftChip;
+    private Chip rightChip;
     private String mSession;
+    private String mToken;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -55,17 +77,29 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, PERMISSIONS, 1);
         }
 
-        tvBitrate = findViewById(R.id.tvBitrate);
+
+        leftChip = findViewById(R.id.left_chip);
+        leftChip.setText(R.string.left_chip_default_text);
+
+        rightChip = findViewById(R.id.right_chip);
+        rightChip.setText(getString(R.string.fps_chip_text, 0));
+
         SurfaceView surfaceView = findViewById(R.id.surfaceView);
         surfaceView.getHolder().addCallback(getSurfaceCallback());
         rtspCamera1 = new RtspCamera1(surfaceView, getConnectCheckerRtsp());
         rtspCamera1.setVideoCodec(VideoCodec.H264);
-//        rtspCamera1.setVideoCodec(VideoCodec.H265);
-
+        rtspCamera1.setFpsListener(getFpsListener());
         mSession = getIntent().getStringExtra("session");
 
         initButtons();
+        SharedPreferences sharedPref = getSharedPreferences(getString(R.string.common_res_file), Context.MODE_PRIVATE);
+        mToken = sharedPref.getString("token", null);
+        getSupportActionBar().hide();
+    }
 
+    @NonNull
+    private FpsListener.Callback getFpsListener() {
+        return fps -> runOnUiThread(() -> rightChip.setText(getString(R.string.fps_chip_text, fps)));
     }
 
     private SurfaceHolder.Callback getSurfaceCallback() {
@@ -111,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
             @SuppressLint("SetTextI18n")
             @Override
             public void onNewBitrateRtsp(long bitrate) {
-                runOnUiThread(() -> tvBitrate.setText(bitrate / 1024 + " kbps"));
+                runOnUiThread(() -> leftChip.setText(bitrate / 1024 + " kbps"));
             }
 
             @Override
@@ -134,9 +168,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initButtons() {
         ImageView bSwitchCamera = findViewById(R.id.switch_camera_btn);
-        bSwitchCamera.setOnClickListener(v -> {
-            rtspCamera1.switchCamera();
-        });
+        bSwitchCamera.setOnClickListener(v -> rtspCamera1.switchCamera());
 
         bStartStopStream = findViewById(R.id.start_stop_stream_btn);
         bStartStopStream.setOnClickListener(v -> {
@@ -144,11 +176,62 @@ public class MainActivity extends AppCompatActivity {
                 rtspCamera1.startStream(getString(R.string.rtsp_url) + "/" + mSession);
                 makeButtonActive(v);
             } else {
-                rtspCamera1.stopStream();
-                makeButtonInactive(v);
+                showAlertDialog();
+//                rtspCamera1.stopStream();
+//                makeButtonInactive(v);
             }
 
         });
+
+        ImageView bSettings = findViewById(R.id.settings_btn);
+        bSettings.setOnClickListener(v -> {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            this.startActivity(intent);
+        });
+
+    }
+
+    private void showAlertDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_NUMBER_VARIATION_PASSWORD);
+
+        builder.setTitle("Если с вами всё в порядке, введите пин-код")
+                .setPositiveButton(
+                        "Ок",
+                        (dialogInterface, i) -> {
+                            httpClientHandler.makeSessionCloseRequest(
+                                    mToken,
+                                    getSessionCloseCallback(),
+                                    getString(R.string.base_url),
+                                    new SessionCloseRequest(mSession, input.getText().toString()));
+                        }
+                )
+                .setNegativeButton(
+                        "Отмена",
+                        (dialog, which) -> dialog.dismiss()
+                )
+                .setView(input)
+                .create()
+                .show();
+    }
+
+    private Callback getSessionCloseCallback() {
+        return new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    rtspCamera1.stopStream();
+                    runOnUiThread(() -> makeButtonInactive(bStartStopStream));
+                }
+            }
+        };
     }
 
     private void makeButtonActive(View v) {
@@ -159,6 +242,7 @@ public class MainActivity extends AppCompatActivity {
     private void makeButtonInactive(View v) {
         ImageView iv = (ImageView) v;
         iv.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.ic_camera_orange));
+        leftChip.setText(getString(R.string.left_chip_default_text));
     }
 
     private boolean prepareEncoders() {

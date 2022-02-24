@@ -72,7 +72,8 @@ public class PinFragment extends Fragment {
 
         binding.pinButtonForward.setOnClickListener(v -> {
 
-            SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+//            SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+            SharedPreferences sharedPref = getActivity().getSharedPreferences(getString(R.string.common_res_file), Context.MODE_PRIVATE);
             String token = sharedPref.getString("token", null);
 
             httpClientHandler.makeSignUpRequest(
@@ -113,10 +114,6 @@ public class PinFragment extends Fragment {
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if (response.isSuccessful()) {
                     makeToastShort(getActivity(), "SignUp Succeed");
-//                    SharedPreferences sharedPref = getActivity().getSharedPreferences("common", Context.MODE_PRIVATE);
-//                    SharedPreferences.Editor editor = sharedPref.edit();
-//                    editor.putString("session", response.body().string());
-//                    editor.apply();
 
                     httpClientHandler.makeSessionRequest(token, getSessionCallback(), getString(R.string.base_url));
                 } else {

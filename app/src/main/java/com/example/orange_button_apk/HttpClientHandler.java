@@ -3,6 +3,7 @@ package com.example.orange_button_apk;
 import static okhttp3.HttpUrl.parse;
 import static okhttp3.RequestBody.create;
 
+import com.example.orange_button_apk.model.SessionCloseRequest;
 import com.example.orange_button_apk.model.SignUpRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -48,6 +49,26 @@ public class HttpClientHandler {
         try {
 
             HttpUrl httpUrl = parse(baseUrl + "/signup")
+                    .newBuilder()
+                    .addQueryParameter("token", idToken)
+                    .build();
+            Request request = new Request.Builder()
+                    .url(httpUrl)
+                    .addHeader("Content-Type", "application/json")
+                    .post(create(objectMapper.writeValueAsString(signUpRequest), MediaType.parse("application/json")))
+                    .build();
+            Call call = client.newCall(request);
+            call.enqueue(callback);
+
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void makeSessionCloseRequest(String idToken, Callback callback, String baseUrl, SessionCloseRequest signUpRequest) {
+        try {
+
+            HttpUrl httpUrl = parse(baseUrl + "/session/close")
                     .newBuilder()
                     .addQueryParameter("token", idToken)
                     .build();

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/settings_nav"
+    app:startDestination="@id/settingsRootFragment">
+
+    <fragment
+        android:id="@+id/settingsRootFragment"
+        android:name="com.example.orange_button_apk.fragment.SettingsRootFragment"
+        android:label="fragment_settings_root"
+        tools:layout="@layout/fragment_settings_root">
+        <action
+            android:id="@+id/action_settingsRootFragment_to_guardsSettingsFragment"
+            app:destination="@id/guardsSettingsFragment" />
+        <action
+            android:id="@+id/action_settingsRootFragment_to_pinSettingsFragment"
+            app:destination="@id/pinSettingsFragment" />
+        <action
+            android:id="@+id/action_settingsRootFragment_to_sessionSettingsFragment"
+            app:destination="@id/sessionSettingsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/guardsSettingsFragment"
+        android:name="com.example.orange_button_apk.fragment.GuardsSettingsFragment"
+        android:label="fragment_guards_settings"
+        tools:layout="@layout/fragment_guards_settings" />
+    <fragment
+        android:id="@+id/pinSettingsFragment"
+        android:name="com.example.orange_button_apk.fragment.PinSettingsFragment"
+        android:label="fragment_pin_settings"
+        tools:layout="@layout/fragment_pin_settings" />
+    <fragment
+        android:id="@+id/sessionSettingsFragment"
+        android:name="com.example.orange_button_apk.fragment.SessionSettingsFragment"
+        android:label="fragment_session_settings"
+        tools:layout="@layout/fragment_session_settings" />
+</navigation>

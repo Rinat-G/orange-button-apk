@@ -79,6 +79,8 @@ public class StartFragment extends Fragment {
                     this::handleSignInResult
             );
         }
+
+        binding.tryAgain.setOnClickListener(v -> handleSignInResult(task));
     }
 
     @Override
@@ -104,7 +106,7 @@ public class StartFragment extends Fragment {
             Log.i(TAG, "handleSignInResult: " + account.getEmail());
 
 
-            SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+            SharedPreferences sharedPref = getActivity().getSharedPreferences(getString(R.string.common_res_file), Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
             editor.putString("token", account.getIdToken());
             editor.apply();
